@@ -1,0 +1,36 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - dev
+      - sit
+      - prod
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
+      - name: Terraform Init
+        run: terraform -chdir=envs/${{ github.ref_name }} init
+
+      - name: Terraform Plan
+        run: terraform -chdir=envs/${{ github.ref_name }} plan -var-file="${{ github.ref_name }}.tfvars"
+
+      - name: Terraform Apply
+        if: github.ref != 'refs/heads/dev'  # Auto apply only for SIT/PROD, dev requires manual
+        run: terraform -chdir=envs/${{ github.ref_name }} apply -auto-approve -var-file="${{ github.ref_name }}.tfvars"
