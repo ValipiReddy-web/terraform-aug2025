@@ -26,11 +26,11 @@ jobs:
           terraform_version: 1.9.5
 
       - name: Terraform Init
-        run: terraform -chdir=envs/${{ github.ref_name }} init
+        run: terraform -chdir=environments/${{ github.ref_name }} init
 
       - name: Terraform Plan
-        run: terraform -chdir=envs/${{ github.ref_name }} plan -var-file="${{ github.ref_name }}.tfvars"
+        run: terraform -chdir=environments/${{ github.ref_name }} plan -var-file="${{ github.ref_name }}.tfvars"
 
       - name: Terraform Apply
         if: github.ref != 'refs/heads/dev'  # Auto apply only for SIT/PROD, dev requires manual
-        run: terraform -chdir=envs/${{ github.ref_name }} apply -auto-approve -var-file="${{ github.ref_name }}.tfvars"
+        run: terraform -chdir=environments/${{ github.ref_name }} apply -auto-approve -var-file="${{ github.ref_name }}.tfvars"
