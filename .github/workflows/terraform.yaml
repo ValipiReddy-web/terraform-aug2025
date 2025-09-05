@@ -34,3 +34,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref != 'refs/heads/dev'  # Auto apply only for SIT/PROD, dev requires manual
         run: terraform -chdir=environments/${{ github.ref_name }} apply -auto-approve -var-file="${{ github.ref_name }}.tfvars"
+
